@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+
+      function initMap() {
+          var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 2,
+           center: {lat:44.490215, lng: 2.316602}
+        });
+
+           var flightPlanCoordinates = [
+          {lat: 37.772, lng: -122.214,city : "Brisbane"},
+          {lat: 21.291, lng: -157.821, city : "Sava"},
+          {lat: -18.142, lng: 178.431, city : "Honolulu"},
+          {lat: -27.467, lng: 153.027, city: "San Francisco"}
+        ];
+
+
+        var drawPath = [];
+        {% for city in shortestPath %}    
+            var lat = parseFloat({{city['lat']}});
+            var lng = parseFloat({{city['lng']}});                
+
+            var startMarker = new google.maps.Marker({
+                map: map,
+                position: {
+                    lat: lat,
+                    lng: lng,
+                }
+            }); 
+
+
+            drawPath.push({
+                lat: lat,
+                lng: lng
+            })
+            var content = "{{city['name']}}"
+          var infowindow = new google.maps.InfoWindow();
+
+        google.maps.event.addListener(startMarker,'click', (function(startMarker,content,infowindow){ 
+                return function() {
+                   infowindow.setContent(content);
+                   infowindow.open(map,startMarker);
+                };
+            })(startMarker,content,infowindow)); 
+
+        {% endfor %}
+
+          var flightPath = new google.maps.Polyline({
+          path: drawPath,
+          geodesic: true,
+          strokeColor: '#1B9CFC',
+          strokeOpacity: 1.0,
+          strokeWeight: 5
+        });
+
+                flightPath.setMap(map);
+}
+
+
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_qze5LJK6gw_HS9eGjq5gZOKLI4ghfyI&callback=initMap"
+    async defer></script>
+  </body>
+</html>
