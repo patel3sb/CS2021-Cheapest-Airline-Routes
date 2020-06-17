@@ -43,7 +43,7 @@ def get_route():
 
     #get data from the submitted form
     start = request.form['start']
-    end = request.form['end'];
+    end = request.form['end']
     if start != end:
       res = shortestPath(graph, start, end)
     
